@@ -2,6 +2,7 @@ package com.baccarpoints1.demo.controller;
 
 import java.util.Map;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.baccarpoints1.demo.dto.AddPointsRequest;
 import com.baccarpoints1.demo.dto.CreateClientRequest;
 import com.baccarpoints1.demo.entity.Client;
+import com.baccarpoints1.demo.exceptions.ClientAlreadyExistsException;
 import com.baccarpoints1.demo.exceptions.ClientNotFoundException;
 import com.baccarpoints1.demo.service.ClientService;
 
@@ -31,7 +33,7 @@ public class ClientController {
 
     @PostMapping
     public ResponseEntity<?> createClient(
-            @RequestBody CreateClientRequest request,
+            @Valid @RequestBody CreateClientRequest request,
             Authentication authentication) {
 
         Long facilityId = (Long) authentication.getPrincipal();
@@ -46,9 +48,12 @@ public class ClientController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(client);
 
-        } catch (IllegalArgumentException e) {
+        } catch (ClientAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(java.util.Map.of("message", e.getMessage()));
+                    .body(Map.of("message", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
         }
     }
 
@@ -66,7 +71,7 @@ public class ClientController {
 
     @PostMapping("/addpoints")
     public ResponseEntity<?> addPoints(
-            @RequestBody AddPointsRequest request,
+            @Valid @RequestBody AddPointsRequest request,
             Authentication authentication) {
 
         Long facilityId = (Long) authentication.getPrincipal();
@@ -82,10 +87,10 @@ public class ClientController {
             }
 
             return ResponseEntity.ok(
-                    java.util.Map.of("message", "Points added successfully."));
+                    Map.of("message", "Points added successfully."));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
-                    .body(java.util.Map.of("message", e.getMessage()));
+                    .body(Map.of("message", e.getMessage()));
         }
     }
 }
