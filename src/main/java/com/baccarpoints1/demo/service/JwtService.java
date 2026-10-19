@@ -23,12 +23,13 @@ public class JwtService {
                 Decoders.BASE64.decode(secret));
     }
 
-    public String generateToken(String username, Long facilityId) {
+    public String generateToken(String username, Long facilityId, int tokenVersion) {
         Instant now = Instant.now();
 
         return Jwts.builder()
                 .subject(username)
                 .claim("facilityId", facilityId)
+                .claim("tokenVersion", tokenVersion)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusSeconds(3600)))
                 .signWith(key)
@@ -51,5 +52,20 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("facilityId", Long.class);
+    }
+
+    public int extractTokenVersion(String token) {
+        Object value = Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("tokenVersion");
+
+        if (!(value instanceof Number number)) {
+            throw new IllegalArgumentException("Token is missing a valid token version");
+        }
+
+        return number.intValue();
     }
 }
