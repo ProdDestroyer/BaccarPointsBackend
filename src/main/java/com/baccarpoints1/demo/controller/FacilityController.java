@@ -2,6 +2,7 @@ package com.baccarpoints1.demo.controller;
 
 import java.util.Map;
 
+import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class FacilityController {
 
     @PostMapping
     public ResponseEntity<?> createFacility(
-            @RequestBody CreateFacilityRequest request) {
+            @Valid @RequestBody CreateFacilityRequest request) {
 
         try {
             Facility created = facilityService.createFacility(
@@ -52,7 +53,7 @@ public class FacilityController {
 
     @PutMapping("/passwordUpdate")
     public ResponseEntity<?> updatePassword(
-            @RequestBody PasswordUpdateRequest request,
+            @Valid @RequestBody PasswordUpdateRequest request,
             Authentication authentication) {
 
         Long facilityId = (Long) authentication.getPrincipal();
@@ -74,7 +75,7 @@ public class FacilityController {
 
     @PutMapping("/usernameUpdate")
     public ResponseEntity<?> updateUsername(
-            @RequestBody UsernameUpdateRequest request,
+            @Valid @RequestBody UsernameUpdateRequest request,
             Authentication authentication) {
 
         Long facilityId = (Long) authentication.getPrincipal();
