@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import com.baccarpoints1.demo.entity.Client;
+import com.baccarpoints1.demo.exceptions.ClientAlreadyExistsException;
 import com.baccarpoints1.demo.exceptions.ClientNotFoundException;
 import com.baccarpoints1.demo.repository.ClientRepository;
 
@@ -54,7 +55,7 @@ public class ClientService {
             Long facilityId) {
 
         if (clientRepository.existsById(id)) {
-            throw new IllegalArgumentException(
+            throw new ClientAlreadyExistsException(
                     "A client with ID " + id + " already exists.");
         }
 
@@ -69,20 +70,13 @@ public class ClientService {
         client.setLastName(lastName);
         client.setPoints(initialPoints);
 
-        try {
-            Client savedClient = clientRepository.saveAndFlush(client);
+        Client savedClient = clientRepository.saveAndFlush(client);
 
-            if (initialPoints > 0) {
-                pointsHistoryRepository.insertHistory(
-                        facilityId, id, initialPoints);
-            }
-
-            return savedClient;
-
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException(
-                    "A client with ID " + id + " already exists.", e);
+        if (initialPoints > 0) {
+            pointsHistoryRepository.insertHistory(
+                    facilityId, id, initialPoints);
         }
-    }
 
+        return savedClient;
+    }
 }
