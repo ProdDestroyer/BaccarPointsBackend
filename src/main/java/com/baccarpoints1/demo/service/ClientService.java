@@ -1,0 +1,74 @@
+package com.baccarpoints1.demo.service;
+
+import com.baccarpoints1.demo.repository.PointsHistoryRepository;
+
+import org.springframework.stereotype.Service;
+import org.springframework.dao.DataIntegrityViolationException;
+
+import com.baccarpoints1.demo.entity.Client;
+import com.baccarpoints1.demo.exceptions.ClientNotFoundException;
+import com.baccarpoints1.demo.repository.ClientRepository;
+
+import jakarta.transaction.Transactional;
+
+@Service
+public class ClientService {
+
+    private final PointsHistoryRepository pointsHistoryRepository;
+    private final ClientRepository clientRepository;
+
+    public ClientService(ClientRepository clientRepository, PointsHistoryRepository pointsHistoryRepository) {
+        this.clientRepository = clientRepository;
+        this.pointsHistoryRepository = pointsHistoryRepository;
+    }
+
+    public Client getClient(String id) {
+        return clientRepository.findById(id)
+                .orElseThrow(() -> new ClientNotFoundException(
+                        "Client with ID " + id + " not found."));
+    }
+
+    @Transactional
+    public boolean addPoints(String id, int points, Long facilityId) {
+        if (points <= 0) {
+            throw new IllegalArgumentException("Points must be greater than zero.");
+        }
+
+        int updated = clientRepository.addPoints(id, points);
+
+        if (updated == 0) {
+            return false;
+        }
+
+        pointsHistoryRepository.insertHistory(facilityId, id, points);
+
+        return true;
+    }
+
+    public Client createClient(
+            String id,
+            String firstName,
+            String lastName,
+            int initialPoints,
+            Long facilityId) {
+
+        if (clientRepository.existsById(id)) {
+            throw new IllegalArgumentException(
+                    "A client with ID " + id + " already exists.");
+        }
+
+        Client client = new Client();
+        client.setId(id);
+        client.setFirstName(firstName);
+        client.setLastName(lastName);
+        client.setPoints(initialPoints);
+
+        try {
+            return clientRepository.saveAndFlush(client);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException(
+                    "A client with ID " + id + " already exists.", e);
+        }
+    }
+
+}
