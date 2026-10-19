@@ -1,4 +1,5 @@
 package com.baccarpoints1.demo.controller;
+
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.baccarpoints1.demo.dto.FacilityResponse;
 import com.baccarpoints1.demo.dto.PasswordUpdateRequest;
 import com.baccarpoints1.demo.dto.UsernameUpdateRequest;
 import com.baccarpoints1.demo.entity.Facility;
@@ -26,9 +28,16 @@ public class FacilityController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createFacility(@RequestBody Facility facility) {
+    public ResponseEntity<FacilityResponse> createFacility(
+            @RequestBody Facility facility) {
+
         Facility created = facilityService.createFacility(facility);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+
+        FacilityResponse response = new FacilityResponse(
+                created.getId(),
+                created.getUsername());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/passwordUpdate")

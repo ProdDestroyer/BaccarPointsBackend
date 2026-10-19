@@ -49,8 +49,7 @@ public class ClientService {
             String id,
             String firstName,
             String lastName,
-            int initialPoints,
-            Long facilityId) {
+            int initialPoints) {
 
         if (clientRepository.existsById(id)) {
             throw new IllegalArgumentException(

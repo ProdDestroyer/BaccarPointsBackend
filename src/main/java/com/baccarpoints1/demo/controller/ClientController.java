@@ -34,15 +34,13 @@ public class ClientController {
             @RequestBody CreateClientRequest request,
             Authentication authentication) {
 
-        Long facilityId = (Long) authentication.getPrincipal();
-
         try {
             Client client = clientService.createClient(
                     request.getId(),
                     request.getFirstName(),
                     request.getLastName(),
-                    request.getPoints(),
-                    facilityId);
+                    request.getPoints()
+                );
 
             return ResponseEntity.status(HttpStatus.CREATED).body(client);
 
