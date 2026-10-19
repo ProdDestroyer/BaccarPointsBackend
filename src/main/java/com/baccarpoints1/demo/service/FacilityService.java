@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.baccarpoints1.demo.entity.Facility;
 import com.baccarpoints1.demo.repository.FacilityRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class FacilityService {
 
@@ -22,20 +24,26 @@ public class FacilityService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Facility createFacility(Facility facility) {
-        facility.setPassword(passwordEncoder.encode(facility.getPassword()));
+    public Facility createFacility(String username, String password) {
+        Facility facility = new Facility();
+        facility.setUsername(username);
+        facility.setPassword(passwordEncoder.encode(password));
+
         return facilityRepository.save(facility);
     }
 
-    public boolean updatePassword(String username, String password, String newPassword) {
+    @Transactional
+    public boolean updatePassword(
+            Long facilityId,
+            String currentPassword,
+            String newPassword) {
 
-        Facility facility = facilityRepository.findByUsername(username);
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElse(null);
 
-        if (facility == null) {
-            return false;
-        }
-
-        if (!passwordEncoder.matches(password, facility.getPassword())) {
+        if (facility == null
+                || !passwordEncoder.matches(
+                        currentPassword, facility.getPassword())) {
             return false;
         }
 
@@ -45,21 +53,22 @@ public class FacilityService {
         return true;
     }
 
-    public boolean updateUserName(String username, String newUsername, String password) {
+    @Transactional
+    public boolean updateUserName(
+            Long facilityId,
+            String newUsername,
+            String currentPassword) {
 
-        Facility facility = facilityRepository.findByUsername(username);
-        
-        if (facility == null) {
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElse(null);
+
+        if (facility == null
+                || !passwordEncoder.matches(
+                        currentPassword, facility.getPassword())) {
             return false;
         }
 
-        Facility newUserNameFacility = facilityRepository.findByUsername(newUsername);
-
-        if(newUserNameFacility != null) {
-            return false;
-        }
-
-        if (!passwordEncoder.matches(password, facility.getPassword())) {
+        if (facilityRepository.existsByUsername(newUsername)) {
             return false;
         }
 

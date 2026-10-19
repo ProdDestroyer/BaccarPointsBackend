@@ -34,13 +34,15 @@ public class ClientController {
             @RequestBody CreateClientRequest request,
             Authentication authentication) {
 
+        Long facilityId = (Long) authentication.getPrincipal();
+
         try {
             Client client = clientService.createClient(
                     request.getId(),
                     request.getFirstName(),
                     request.getLastName(),
-                    request.getPoints()
-                );
+                    request.getPoints(),
+                    facilityId);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(client);
 
@@ -74,7 +76,9 @@ public class ClientController {
                     request.getClientId(), request.getPoints(), facilityId);
 
             if (!success) {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message",
+                                "Client with ID " + request.getClientId() + " not found."));
             }
 
             return ResponseEntity.ok(

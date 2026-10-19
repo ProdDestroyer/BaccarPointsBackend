@@ -45,15 +45,22 @@ public class ClientService {
         return true;
     }
 
+    @Transactional
     public Client createClient(
             String id,
             String firstName,
             String lastName,
-            int initialPoints) {
+            int initialPoints,
+            Long facilityId) {
 
         if (clientRepository.existsById(id)) {
             throw new IllegalArgumentException(
                     "A client with ID " + id + " already exists.");
+        }
+
+        if (initialPoints < 0) {
+            throw new IllegalArgumentException(
+                    "Initial points cannot be negative.");
         }
 
         Client client = new Client();
@@ -63,7 +70,15 @@ public class ClientService {
         client.setPoints(initialPoints);
 
         try {
-            return clientRepository.saveAndFlush(client);
+            Client savedClient = clientRepository.saveAndFlush(client);
+
+            if (initialPoints > 0) {
+                pointsHistoryRepository.insertHistory(
+                        facilityId, id, initialPoints);
+            }
+
+            return savedClient;
+
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException(
                     "A client with ID " + id + " already exists.", e);
