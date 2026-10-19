@@ -21,6 +21,9 @@ public class Facility {
     @Column(nullable = false, length = 255)
     private String password;
 
+    @Column(name = "token_version", nullable = false)
+    private int tokenVersion;
+
     public Facility() {
     }
 
@@ -46,5 +49,13 @@ public class Facility {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getTokenVersion() {
+        return tokenVersion;
+    }
+
+    public void setTokenVersion(int tokenVersion) {
+        this.tokenVersion = tokenVersion;
     }
 }

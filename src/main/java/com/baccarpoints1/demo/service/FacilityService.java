@@ -48,6 +48,7 @@ public class FacilityService {
         }
 
         facility.setPassword(passwordEncoder.encode(newPassword));
+        facility.setTokenVersion(facility.getTokenVersion() + 1);
         facilityRepository.save(facility);
 
         return true;
@@ -73,6 +74,7 @@ public class FacilityService {
         }
 
         facility.setUsername(newUsername);
+        facility.setTokenVersion(facility.getTokenVersion() + 1);
         facilityRepository.save(facility);
 
         return true;

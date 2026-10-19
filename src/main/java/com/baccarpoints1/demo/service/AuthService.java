@@ -30,6 +30,7 @@ public class AuthService {
 
         return jwtService.generateToken(
                 facility.getUsername(),
-                facility.getId());
+                facility.getId(),
+                facility.getTokenVersion());
     }
 }
