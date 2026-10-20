@@ -19,6 +19,9 @@ public class Client {
     @Column(name = "last_name", length = 20, nullable = false)
     private String lastName;
 
+    @Column(name = "whatsapp_number", length = 20)
+    private String whatsappNumber;
+
     @Column(nullable = false)
     private int points;
 
@@ -47,6 +50,14 @@ public class Client {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getWhatsappNumber() {
+        return whatsappNumber;
+    }
+
+    public void setWhatsappNumber(String whatsappNumber) {
+        this.whatsappNumber = whatsappNumber;
     }
 
     public int getPoints() {
