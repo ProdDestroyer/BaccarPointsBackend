@@ -51,6 +51,7 @@ public class ClientService {
             String id,
             String firstName,
             String lastName,
+            String whatsappNumber,
             int initialPoints,
             Long facilityId) {
 
@@ -68,6 +69,7 @@ public class ClientService {
         client.setId(id);
         client.setFirstName(firstName);
         client.setLastName(lastName);
+        client.setWhatsappNumber(whatsappNumber);
         client.setPoints(initialPoints);
 
         Client savedClient = clientRepository.saveAndFlush(client);
