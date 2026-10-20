@@ -43,6 +43,7 @@ public class ClientController {
                     request.getId(),
                     request.getFirstName(),
                     request.getLastName(),
+                    request.getWhatsappNumber(),
                     request.getPoints(),
                     facilityId);
 
