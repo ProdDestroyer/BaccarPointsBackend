@@ -18,6 +18,9 @@ public class CreateClientRequest {
     @Size(max = 20, message = "Last name must not exceed 20 characters.")
     private String lastName;
 
+    @Size(max = 20, message = "WhatsApp number must not exceed 20 characters.")
+    private String whatsappNumber;
+
     @Min(value = 0, message = "Initial points cannot be negative.")
     private int points;
 
@@ -45,6 +48,14 @@ public class CreateClientRequest {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getWhatsappNumber() {
+        return whatsappNumber;
+    }
+
+    public void setWhatsappNumber(String whatsappNumber) {
+        this.whatsappNumber = whatsappNumber;
     }
 
     public int getPoints() {
